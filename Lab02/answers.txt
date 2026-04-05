@@ -1,0 +1,22 @@
+Lab 02 - Answers
+
+1. When should accessor methods be used?
+Accessor methods should be used only when controlled access to an object's data is really needed. They help preserve encapsulation by exposing data in a safe and intentional way instead of allowing direct modification of fields. In the AIMS project, getters are appropriate because the system needs to display DVD information to users, while setters are generally unnecessary because there is no use case that requires changing a DVD's information after it is created. In general, getters and setters should not be generated blindly for every field. They should be added only when they support the business requirements and protect the object's integrity.
+
+2. If you create a constructor method to build a DVD by title, then create a constructor method to build a DVD by category, does Java allow you to do this?
+No. Java does not allow this because both constructors would have the same signature: DigitalVideoDisc(String). Method overloading in Java depends on the number and types of parameters, not on the parameter names or their meanings.
+
+3. Compared to an array parameter, what do you prefer for addDigitalVideoDisc when passing an arbitrary number of DVDs?
+I prefer varargs because it makes the method call simpler and more convenient when adding a small number of DVDs. For example, addDigitalVideoDisc(dvd1, dvd2, dvd3) is easier to read and write than first creating an array. However, an array parameter is still useful when the caller already has a DigitalVideoDisc[] prepared. So varargs is more convenient in general, while arrays are suitable when working with an existing collection of items.
+
+4. Is Java a pass-by-value or a pass-by-reference programming language?
+Java is always a pass-by-value programming language.
+
+5. After the call of swap(jungleDVD, cinderellaDVD), why do the titles of these two objects still remain?
+The titles remain unchanged because Java passes copies of references, not the original references themselves. Inside the swap method, only the copied references are swapped. The original references in the main method still point to the same objects as before, so the titles remain the same.
+
+6. After the call of changeTitle(jungleDVD, cinderellaDVD.getTitle()), why is the title of jungleDVD changed?
+The title of jungleDVD changes because the copied reference still points to the same jungleDVD object in memory. When the method uses that reference to call setTitle(), it modifies the actual object. Therefore, the change is visible outside the method as well.
+
+7. Why is nbDigitalVideoDiscs a class member while id is an instance member?
+nbDigitalVideoDiscs is a class member because it is shared by all DigitalVideoDisc objects and is used to count how many DVD objects have been created in total. In contrast, id is an instance member because each DVD object must have its own unique identifier. Every time a new DVD is created, the shared counter is increased and the new value is assigned to that specific object's id.
