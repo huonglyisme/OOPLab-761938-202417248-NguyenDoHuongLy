@@ -1,0 +1,164 @@
+1. What should be the return type of the toString() method?
+The return type of toString() must be String.
+Reason: toString() is used to return a textual representation of an object so that it can be printed or concatenated in output statements.
+
+2. Constructors of whole classes and parent classes:
+Which classes are aggregates of other classes? Should constructors of whole classes initialize their parts?
+
+Aggregate relationships in this lab:
+- Cart aggregates a list of Media objects.
+- Store aggregates a list of Media objects.
+- CompactDisc aggregates a list of Track objects.
+- Book aggregates a list of authors.
+
+Discussion:
+- A whole class should initialize its parts when those parts are intrinsic to the object and should always exist after construction.
+- For example:
+  - Cart should initialize itemsOrdered as an empty ArrayList<Media>.
+  - Store should initialize itemsInStore as an empty ArrayList<Media>.
+  - CompactDisc should initialize tracks as an empty ArrayList<Track>.
+  - Book should initialize authors as an empty ArrayList<String>.
+- However, the whole class does not need to create every contained element at construction time. For instance, a Cart is created with an empty list first, and Media objects are added later.
+
+3. equals() question:
+If the passing object is not an instance of Media, what happens?
+
+If the argument passed to equals() is not an instance of Media, the method should return false.
+Reason:
+- Before casting, the code should check:
+  if (!(obj instanceof Media)) return false;
+- Without this check, casting a non-Media object to Media would cause a ClassCastException.
+
+4. Polymorphism with toString():
+Observe what happens and explain in detail.
+
+When an ArrayList<Media> contains different subclasses such as Book, DigitalVideoDisc, and CompactDisc, and we iterate through the list calling toString(), Java uses dynamic binding (runtime polymorphism).
+That means:
+- If the actual object is a Book, Book.toString() is called.
+- If the actual object is a DigitalVideoDisc, DigitalVideoDisc.toString() is called.
+- If the actual object is a CompactDisc, CompactDisc.toString() is called.
+
+Even though the reference type is Media, the method that runs depends on the real object type at runtime.
+This is polymorphism because one interface (calling toString() on a Media reference) leads to different behaviors depending on the subclass object.
+
+5. Reading Assignment:
+What are the advantages of Polymorphism?
+
+Polymorphism has several advantages:
+- It makes code more flexible because one variable type can represent many related object types.
+- It improves extensibility because new subclasses can be added with minimal changes to existing code.
+- It reduces duplication by allowing common interfaces and shared parent types.
+- It improves maintainability because client code can work with abstractions instead of concrete classes.
+- It supports dynamic dispatch, so the correct overridden method is chosen at runtime.
+
+6. Reading Assignment:
+How is Inheritance useful to achieve Polymorphism in Java?
+
+Inheritance is one of the main mechanisms used to achieve polymorphism in Java.
+When a subclass extends a superclass, it inherits fields and methods and may override methods.
+Then, a superclass reference can point to subclass objects.
+For example:
+- Media m = new Book(...);
+- Media m = new DigitalVideoDisc(...);
+
+Because of inheritance, Java allows all these objects to be treated as Media while still calling the correct overridden methods such as toString() or play() at runtime.
+Therefore, inheritance provides the “is-a” relationship that enables subtype polymorphism.
+
+7. Reading Assignment:
+What are the differences between Polymorphism and Inheritance in Java?
+
+Inheritance:
+- Describes a structural relationship between classes.
+- Expresses an “is-a” relationship.
+- Allows a subclass to reuse and extend code from a superclass.
+
+Polymorphism:
+- Describes a behavioral capability.
+- Allows the same reference type or method call to work with different object types.
+- Focuses on method overriding and dynamic dispatch.
+
+Relationship between them:
+- Inheritance is one common way to achieve polymorphism.
+- However, they are not the same concept.
+- Inheritance is about class hierarchy.
+- Polymorphism is about using that hierarchy (or interfaces) to produce different behaviors through a common type.
+
+8. Comparable question:
+What class should implement the Comparable interface?
+
+If using Comparable instead of Comparator, the most suitable class to implement Comparable would be Media, because sorting is required for items in the cart and the cart stores Media objects.
+That would allow a natural ordering for all media items.
+
+9. Comparable question:
+How should compareTo() be implemented to reflect the ordering that we want?
+
+If Media implements Comparable<Media>, compareTo() should define one natural ordering only.
+For example, if we choose “title then cost” as the natural ordering:
+- First compare title alphabetically.
+- If titles are equal, compare cost so that the higher cost appears first.
+
+Pseudo-logic:
+- int cmp = this.title.compareToIgnoreCase(other.title);
+- if (cmp != 0) return cmp;
+- return Float.compare(other.cost, this.cost);
+
+If instead we choose “cost then title”:
+- First compare cost in decreasing order.
+- If costs are equal, compare title alphabetically.
+
+10. Comparable question:
+Can we have two ordering rules (by title then cost and by cost then title) if we use Comparable?
+
+Not conveniently.
+Comparable supports only one natural ordering through a single compareTo() method.
+Therefore, if we use Comparable only, we can define just one default ordering for Media.
+If we need multiple ordering rules, Comparator is better because we can create multiple comparator classes.
+
+11. Comparable question:
+Suppose DVDs have a different ordering rule from other media types, that is by title, then decreasing length, then cost. How would you modify your code to allow this?
+
+The best solution is to keep using Comparator.
+Reason:
+- Different media types may need different sorting rules.
+- Comparator allows multiple independent ordering strategies.
+
+Possible approaches:
+- Create a special comparator for DVD objects, for example:
+  DigitalVideoDiscComparatorByTitleLengthCost
+- Or create different comparators for different use cases and pass them explicitly to Collections.sort().
+
+This is more flexible than Comparable because Comparable provides only one built-in natural ordering.
+
+12. Additional explanation about using Comparator instead of Comparable
+
+Comparator is preferable in this lab because:
+- The cart supports multiple sorting rules.
+- Different media types may require different criteria.
+- It keeps sorting logic separate from domain classes.
+- It avoids forcing one universal “natural order” on all Media objects.
+
+13. Summary of equality rules implemented in this lab
+
+- Two Media objects are considered equal if their titles are equal.
+- Two Track objects are considered equal if both title and length are equal.
+
+This allows:
+- Cart and Store to prevent duplicate Media objects using contains().
+- CompactDisc to prevent duplicate Track objects using contains().
+
+14. Summary of the play behavior
+
+- DigitalVideoDisc.play() prints DVD title and DVD length.
+- Track.play() prints track title and track length.
+- CompactDisc.play() prints CD information, then plays each track in its track list.
+- If the length of a DVD or Track is non-positive, it should notify the user that it cannot be played.
+
+15. Summary of sorting rules in the cart
+
+- Sort by title:
+  Items are sorted alphabetically by title.
+  If titles are the same, the item with higher cost comes first.
+
+- Sort by cost:
+  Items are sorted by decreasing cost.
+  If costs are the same, titles are sorted alphabetically.
