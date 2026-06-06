@@ -8,6 +8,8 @@ import hust.soict.dsai.aims.media.Media;
 import hust.soict.dsai.aims.media.Playable;
 import hust.soict.dsai.aims.media.Track;
 import hust.soict.dsai.aims.store.Store;
+import hust.soict.dsai.aims.exception.PlayerException;
+
 
 import java.util.Scanner;
 
@@ -397,7 +399,11 @@ public class Aims {
 
     private static void playMedia(Media media) {
         if (media instanceof Playable) {
-            ((Playable) media).play();
+            try {
+                ((Playable) media).play();
+            } catch (PlayerException e) {
+                System.err.println(e.getMessage());
+            }
         } else {
             System.out.println("This media cannot be played.");
         }
